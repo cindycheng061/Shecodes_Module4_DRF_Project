@@ -7,6 +7,13 @@ from .permissions import IsOwnerOrAdmin
 from rest_framework.permissions import IsAdminUser
 from .models import CustomUser
 from .serializers import CustomUserSerializer
+
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.response import Response
+
+
+
 class CustomUserList(APIView):
     def get(self, request):
         #from db
@@ -78,5 +85,27 @@ class CustomUserDetail(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        
+        # retrieve user_id and login status
+        user_id = user.id
+        is_login = user.is_authenticated
+        
+        return Response({
+            'token': token.key,
+            'user_id': user_id,
+            'is_login': is_login,
+        })
+
 
 
