@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 # from rest_framework.authtoken.views import obtain_auth_token
 from users.views import CustomAuthToken #import custom token view
-
+from projects.views import UserProjectList, UserPledgeList
 urlpatterns = [  
     path('admin/', admin.site.urls),
     path('',include ('projects.urls')),
@@ -26,5 +26,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     # path('api-token-auth/', obtain_auth_token,name='api_token_auth'),
     path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),  # use custom token view
-
+    path('api/user-projects/', UserProjectList.as_view(), name='user-projects'), # request user's projects
+    path('api/user-pledges/', UserPledgeList.as_view(), name='user-pledges'), 
 ]

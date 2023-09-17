@@ -133,6 +133,32 @@ class PledgeDetail(APIView):
         pledge = self.get_object(pk)
         pledge.delete()
         return Response(status=status.HTTP_200_OK)
+    
+
+# add two views to return all projects and pledges that request user owned/supported
+from rest_framework.views import APIView
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from .models import Project
+from .serializers import ProjectSerializer
+
+class UserProjectList(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # use filter to get request.user projects
+        projects = Project.objects.filter(owner=request.user)
+        serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserPledgeList(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        pledges = Pledge.objects.filter(supporter= request.user)
+        serializer = PledgeSerializer(pledges,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
