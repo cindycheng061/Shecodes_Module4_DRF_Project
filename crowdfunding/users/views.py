@@ -83,6 +83,10 @@ class CustomUserDetail(APIView):
                 return Response({"error": "You don't have permission to update this profile."},
                                 status=status.HTTP_403_FORBIDDEN)
             serializer.save()
+            # set password in a hashing format
+            user.set_password(request.data.get("password"))
+            user.save()
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
